@@ -23,4 +23,5 @@ public class SignUpResponseDto extends ResponseDto {
 		return result;
 	}
 
+
 }

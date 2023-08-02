@@ -92,8 +92,8 @@ public class BoardController {
 	}
 
 	// API : 게시물 삭제 메서드 //
-	@DeleteMapping("/{boardNumber}")
-	public ResponseEntity<?> deleteBoard(@PathVariable("boardNumber") Integer boardNumber) {
+	@DeleteMapping("/{boardNumber}/{email}")
+	public ResponseEntity<?> deleteBoard(@PathVariable("boardNumber") Integer boardNumber, @PathVariable("email") String email) {
 		return CustomResponse.serviceUnavailable;
 	}
 }

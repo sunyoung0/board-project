@@ -12,6 +12,9 @@ import lombok.Setter;
 public class PatchBoardRequestDto {
 	
 	@NotBlank
+	private String userEmail;
+	
+	@NotBlank
 	private String title;
 
 	@NotBlank

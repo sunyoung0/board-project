@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import com.sun.board.dto.request.auth.SignInRequestDto;
 import com.sun.board.dto.request.auth.SignUpRequestDto;
+import com.sun.board.dto.response.auth.SignInResponseDto;
 import com.sun.board.dto.response.auth.SignUpResponseDto;
 
 import org.springframework.http.HttpStatus;
@@ -29,11 +30,12 @@ public class AuthController {
 
 	// API : 로그인 메서드 //
 	@PostMapping("/sign-in")
-	public ResponseEntity<?> signIn(
+	public ResponseEntity<? super SignInResponseDto> signIn(
 		@RequestBody @Valid SignInRequestDto requestBody
 	) {
-		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(null);
+		
+		SignInResponseDto result = SignInResponseDto.success("aa");
+		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(result);
 	}
-
 
 }
