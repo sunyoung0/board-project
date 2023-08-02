@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import com.sun.board.dto.request.auth.SignInRequestDto;
 import com.sun.board.dto.request.auth.SignUpRequestDto;
+import com.sun.board.dto.response.auth.SignUpResponseDto;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,11 @@ public class AuthController {
 	
 	// API : 회원 가입 메서드 //
 	@PostMapping("/sign-up")
-	public ResponseEntity<?> signUp(
+	public ResponseEntity<SignUpResponseDto> signUp(
 		@RequestBody @Valid SignUpRequestDto requestBody
 	) {
-		return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(null);
+		SignUpResponseDto response = SignUpResponseDto.existedEmail();
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	// API : 로그인 메서드 //
