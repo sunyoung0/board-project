@@ -1,5 +1,7 @@
 package com.sun.board.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,10 +9,15 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sun.board.common.response.CustomResponse;
+import com.sun.board.dto.request.board.PatchBoardRequestDto;
+import com.sun.board.dto.request.board.PostBoardRequestDto;
+import com.sun.board.dto.request.board.PostCommentRequestDto;
+import com.sun.board.dto.request.board.PutFavoriteRequestDto;
 
 // controller : 게시물 컨트롤러 //
 @RestController
@@ -62,25 +69,25 @@ public class BoardController {
 
 	// API : 게시물 작성 메서드 //
 	@PostMapping("")
-	public ResponseEntity<?> postBoard(){
+	public ResponseEntity<?> postBoard(@RequestBody @Valid PostBoardRequestDto requestBody){
 		return CustomResponse.serviceUnavailable;
 	}
 
 	// API : 댓글 작성 메서드 //
 	@PostMapping("/{boardNumber}/comment")
-	public ResponseEntity<?> postComment(@PathVariable("boardNumber") Integer boardNumber){
+	public ResponseEntity<?> postComment(@RequestBody @Valid PostCommentRequestDto requestBody){
 		return CustomResponse.serviceUnavailable;
 	}
 
 	// API : 좋아요 기능 메서드 //
 	@PutMapping("/{boardNumber}/favorite")
-	public ResponseEntity<?> putFavorite() {
+	public ResponseEntity<?> putFavorite(@RequestBody @Valid PutFavoriteRequestDto requestBody) {
 		return CustomResponse.serviceUnavailable;
 	}
 
 	// API : 게시물 수정 메서드 //
 	@PatchMapping("/{boardNumber}")
-	public ResponseEntity<?> patchBoard(@PathVariable("boardNumber") Integer boardNumber) {
+	public ResponseEntity<?> patchBoard(@PathVariable("boardNumber") Integer boardNumber, @RequestBody @Valid PatchBoardRequestDto requestBody) {
 		return CustomResponse.serviceUnavailable;
 	}
 
