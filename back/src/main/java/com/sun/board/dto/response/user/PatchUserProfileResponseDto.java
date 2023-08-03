@@ -1,5 +1,7 @@
 package com.sun.board.dto.response.user;
 
+import com.sun.board.common.response.ResponseCode;
+import com.sun.board.common.response.ResponseMessage;
 import com.sun.board.dto.response.ResponseDto;
 
 import lombok.AllArgsConstructor;
@@ -14,13 +16,12 @@ public class PatchUserProfileResponseDto extends ResponseDto {
 	}
 
 	public static PatchUserProfileResponseDto success() {
-		PatchUserProfileResponseDto result = new PatchUserProfileResponseDto("SU", "Success");
+		PatchUserProfileResponseDto result = new PatchUserProfileResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 		return result;
 	}
 
 	public static ResponseDto NoExistedUser() {
-		ResponseDto result = new ResponseDto("NU", "No Existed User");
+		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_USER, ResponseMessage.No_EXISTED_USER);
 		return result;
 	}
-
 }

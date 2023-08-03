@@ -1,5 +1,7 @@
 package com.sun.board.dto.response.board;
 
+import com.sun.board.common.response.ResponseCode;
+import com.sun.board.common.response.ResponseMessage;
 import com.sun.board.dto.response.ResponseDto;
 
 import lombok.AllArgsConstructor;
@@ -14,12 +16,12 @@ public class PostBoardResponseDto extends ResponseDto {
 	}
 
 	public static PostBoardResponseDto success() {
-		PostBoardResponseDto result = new PostBoardResponseDto("SU", "Success");
+		PostBoardResponseDto result = new PostBoardResponseDto(ResponseCode.SUCCESS,ResponseMessage.SUCCESS);
 		return result;
 	}
 
 	public static ResponseDto noExistedUser() {
-		ResponseDto result = new ResponseDto("NU", "No Existed User");
+		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_USER, ResponseMessage.No_EXISTED_USER);
 		return result;
 	}
 

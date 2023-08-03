@@ -1,5 +1,7 @@
 package com.sun.board.dto.response.board;
 
+import com.sun.board.common.response.ResponseCode;
+import com.sun.board.common.response.ResponseMessage;
 import com.sun.board.dto.response.ResponseDto;
 
 import lombok.AllArgsConstructor;
@@ -14,23 +16,22 @@ public class PatchBoardResponseDto extends ResponseDto {
 	}
 
 	public static PatchBoardResponseDto success() {
-		PatchBoardResponseDto result = new PatchBoardResponseDto("SU", "Success");
+		PatchBoardResponseDto result = new PatchBoardResponseDto(ResponseCode.SUCCESS,ResponseMessage.SUCCESS);
 		return result;
 	}
 
 	public static ResponseDto noExistedUser() {
-		ResponseDto result = new ResponseDto("NU", "No Existed User");
+		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_USER, ResponseMessage.No_EXISTED_USER);
 		return result;
 	}
 
 	public static ResponseDto noExistedBoard() {
-		ResponseDto result = new ResponseDto("NB", "No Existed Board");
+		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_BOARD, ResponseMessage.No_EXISTED_BOARD);
 		return result;
 	}
 
 	public static ResponseDto noPermission() {
-		ResponseDto result = new ResponseDto("NP", "No Perission");
+		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_PERMISSION, ResponseMessage.No_EXISTED_PERMISSION);
 		return result;
 	}
-
 }
