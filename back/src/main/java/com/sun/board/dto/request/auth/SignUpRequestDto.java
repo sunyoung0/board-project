@@ -30,6 +30,5 @@ public class SignUpRequestDto {
 	@NotBlank
 	private String address;
 
-	
 	private String addressDetail;
 }

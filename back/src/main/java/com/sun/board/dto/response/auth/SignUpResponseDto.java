@@ -1,5 +1,8 @@
 package com.sun.board.dto.response.auth;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import com.sun.board.common.response.ResponseCode;
 import com.sun.board.common.response.ResponseMessage;
 import com.sun.board.dto.response.ResponseDto;
@@ -15,23 +18,23 @@ public class SignUpResponseDto extends ResponseDto {
 		super(code, message);		//부모 생성자를 불러옴
 	}
 
-	public static SignUpResponseDto success() {
+	public static ResponseEntity<SignUpResponseDto> success() {
 		SignUpResponseDto result = new SignUpResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-		return result;
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	public static ResponseDto existedEmail() {
+	public static ResponseEntity<ResponseDto> existedEmail() {
 		ResponseDto result = new SignUpResponseDto(ResponseCode.EXISTED_EMAIL, ResponseMessage.EXISTED_EMAIL);
-		return result;
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 	}
 	
-	public static ResponseDto existedNickname() {
+	public static ResponseEntity<ResponseDto> existedNickname() {
 		ResponseDto result = new ResponseDto(ResponseCode.EXISTED_NICKNAME, ResponseMessage.EXISTED_NICKNAME);
-		return result;
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 	}
 
-	public static ResponseDto existedTelNumber() {
+	public static ResponseEntity<ResponseDto> existedTelNumber() {
 		ResponseDto result = new ResponseDto(ResponseCode.EXISTED_TEL_NUMBER, ResponseMessage.EXISTED_TEL_NUMBER);
-		return result;
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 	}
 }

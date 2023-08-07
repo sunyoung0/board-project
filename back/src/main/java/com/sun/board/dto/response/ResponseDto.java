@@ -1,5 +1,8 @@
 package com.sun.board.dto.response;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +14,8 @@ public class ResponseDto {
 	private String code;
 	private String message;
 
-	public static ResponseDto databaseError() {
+	public static ResponseEntity<ResponseDto> databaseError() {
 		ResponseDto result = new ResponseDto("DE", "Database Error");
-		return result;
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
 	}
 }
