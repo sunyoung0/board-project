@@ -1,6 +1,7 @@
 package com.sun.board.service.implement;
 
-import org.springframework.http.HttpStatus;
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +23,34 @@ public class AuthServiceImplement implements AuthService {
 	private final UserRepository userRepository;
 
 	@Override
+	// method : 로그인 //
 	public ResponseEntity<? super SignInResponseDto> signIn(SignInRequestDto dto) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'signIn'");
+		
+		String token = null;
+
+		String email = dto.getEmail();
+		String password = dto.getPassword();
+
+		try{
+		// description : 이메일로 entity 조회 //
+		UserEntity userEntity = userRepository.findByEmail(email);	// 웬만하면 findById로 하지말고 직접 만들어주는 것이 좋음
+
+		// description : 존재하지 않는 email 확인 //
+		if(userEntity == null) return SignInResponseDto.signInDataMismatch();
+
+		// description : 비밀번호 일치여부 확인 //
+		boolean entityPassword = userEntity.getPassword().equals(password);
+		if(!entityPassword) return SignInResponseDto.signInDataMismatch();
+
+		// TODO : Security 적용 후 변경 //
+		token = UUID.randomUUID().toString();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		}
+
+		return SignInResponseDto.success(token);
 	}
 
 	@Override
@@ -40,13 +66,13 @@ public class AuthServiceImplement implements AuthService {
 			boolean hasEmail = userRepository.existsById(email);
 			if (hasEmail) return SignUpResponseDto.existedEmail();
 
-			// description : 닉네임 중복 확인 //
-			boolean hasNickname = userRepository.existsByNickname(nickname);
-			if (hasNickname) return SignUpResponseDto.existedNickname();
+			// description: 닉네임 중복 확인 //
+      boolean hasNickname = userRepository.existsByNickname(nickname);
+      if (hasNickname) return SignUpResponseDto.existedNickname();
 
-			// description : 전화번호 중복 확인 //
-			boolean hasTelNumber = userRepository.existsByTelNumber(telNumber);
-			if (hasTelNumber) return SignUpResponseDto.existedTelNumber();
+      // description: 전화번호 중복 확인 //
+      boolean hasTelNumber = userRepository.existsByTelNumber(telNumber);
+      if (hasTelNumber) return SignUpResponseDto.existedTelNumber();
 			
 			// description : Entity 생성 //
 			UserEntity userEntity = new UserEntity(dto);
