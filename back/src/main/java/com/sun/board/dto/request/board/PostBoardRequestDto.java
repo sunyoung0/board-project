@@ -12,6 +12,9 @@ import lombok.Setter;
 public class PostBoardRequestDto {
 
 	@NotBlank
+	private String writerEmail;
+
+	@NotBlank
 	private String title;
 
 	@NotBlank

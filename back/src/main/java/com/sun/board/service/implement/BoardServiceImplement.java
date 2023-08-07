@@ -7,6 +7,7 @@ import com.sun.board.dto.request.board.PatchBoardRequestDto;
 import com.sun.board.dto.request.board.PostBoardRequestDto;
 import com.sun.board.dto.request.board.PostCommentRequestDto;
 import com.sun.board.dto.request.board.PutFavoriteRequestDto;
+import com.sun.board.dto.response.ResponseDto;
 import com.sun.board.dto.response.board.DeleteBoardResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
 import com.sun.board.dto.response.board.PostBoardResponseDto;
@@ -60,9 +61,26 @@ public class BoardServiceImplement implements BoardService {
 	}
 
 	@Override
+	// method : 게시물 작성 //
 	public ResponseEntity<? super PostBoardResponseDto> postBoard(PostBoardRequestDto dto) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'postBoard'");
+
+		String writerEmail = dto.getWriterEmail();
+
+		try{
+
+			// TODO : 작성자 이메일이 존재하는 이메일인지 확인 //
+
+			// TODO : entity 생성 //
+
+			// TODO : 데이터베이스에 저장 //
+
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		}
+
+		return PostBoardResponseDto.success();
 	}
 
 	@Override
