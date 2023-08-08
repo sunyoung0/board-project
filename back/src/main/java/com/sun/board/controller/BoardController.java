@@ -1,5 +1,7 @@
 package com.sun.board.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import com.sun.board.dto.request.board.PostBoardRequestDto;
 import com.sun.board.dto.request.board.PostCommentRequestDto;
 import com.sun.board.dto.request.board.PutFavoriteRequestDto;
 import com.sun.board.dto.response.board.DeleteBoardResponseDto;
+import com.sun.board.dto.response.board.GetCurrentBoardResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
 import com.sun.board.dto.response.board.PostBoardResponseDto;
 import com.sun.board.dto.response.board.PostCommentResponseDto;
@@ -43,8 +46,8 @@ public class BoardController {
 
 	// API : 최신 게시물 불러오기 메서드 //
 	@GetMapping("/current-board")
-	public ResponseEntity<?> getCurrentBoard() {
-		ResponseEntity<?> response = boardService.getCurrentBoard();
+	public ResponseEntity<? super GetCurrentBoardResponseDto> getCurrentBoard() {
+		ResponseEntity<? super GetCurrentBoardResponseDto> response = boardService.getCurrentBoard();
 		return response;
 	}
 
@@ -54,8 +57,7 @@ public class BoardController {
 		ResponseEntity<?> response = boardService.getBoard(boardNumber);
 		return response;
 	}
-
-	// 8/1 4시 50분 영상 보기
+	
 	// API : 검색 게시물 리스트 불러오기 메서드 //
 	@GetMapping("/search/{searchWord}")
 	public ResponseEntity<?> getSearchBoardList(@PathVariable("searchWord") String searchWord) {

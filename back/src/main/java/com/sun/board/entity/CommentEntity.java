@@ -1,10 +1,15 @@
 package com.sun.board.entity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.sun.board.dto.request.board.PostCommentRequestDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +28,15 @@ public class CommentEntity {
 	private String userEmail;
 	private String contents;
 	private String writeDatetime;
+
+	public CommentEntity(Integer boardNumber, PostCommentRequestDto dto) {
+    Date now = new Date();
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    String writeDatetime = simpleDateFormat.format(now);
+
+    this.boardNumber = boardNumber;
+    this.userEmail = dto.getUserEmail();
+    this.contents = dto.getContents();
+    this.writeDatetime = writeDatetime;
+  }
 }

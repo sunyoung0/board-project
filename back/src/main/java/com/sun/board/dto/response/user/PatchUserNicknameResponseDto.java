@@ -1,5 +1,8 @@
 package com.sun.board.dto.response.user;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import com.sun.board.common.response.ResponseCode;
 import com.sun.board.common.response.ResponseMessage;
 import com.sun.board.dto.response.ResponseDto;
@@ -15,18 +18,18 @@ public class PatchUserNicknameResponseDto extends ResponseDto {
 		super(code, message);
 	}
 
-	public static PatchUserNicknameResponseDto success() {
+	public static ResponseEntity<PatchUserNicknameResponseDto> success() {
 		PatchUserNicknameResponseDto result = new PatchUserNicknameResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-		return result;
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	public static ResponseDto noExistedUser() {
+	public static ResponseEntity<ResponseDto> noExistedUser() {
 		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_USER, ResponseMessage.No_EXISTED_USER);
-		return result;
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 	}
 
-	public static ResponseDto existedNickname() {
+	public static ResponseEntity<ResponseDto> existedNickname() {
 		ResponseDto result = new ResponseDto(ResponseCode.EXISTED_NICKNAME, ResponseMessage.EXISTED_NICKNAME);
-		return result;
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 	}
 }

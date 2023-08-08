@@ -42,14 +42,14 @@ public class UserController {
 
 	// API : 유저 닉네임 수정 메서드 //
 	@PatchMapping("{email}/nickname")
-	public ResponseEntity<? super PatchUserNicknameResponseDto> patchUserNickname(@PathVariable("email") String email, @RequestBody @Valid PatchUserNicknameRequestDto requestBody) {
+	public ResponseEntity<? super PatchUserNicknameResponseDto> patchUserNickname(@PathVariable(value="email", required = true) String email, @RequestBody @Valid PatchUserNicknameRequestDto requestBody) {
 		ResponseEntity<? super PatchUserNicknameResponseDto> response = userService.patchUserNickname(email, requestBody);
 		return response;
 	}
 
 	// API : 유저 프로필 이미지 수정 메서드 //
 	@PatchMapping("/{email}/profile")
-	public ResponseEntity<? super PatchUserProfileResponseDto> patchUserProfile(@PathVariable("email") String email, @RequestBody @Valid PatchUserProfileRequestDto requestBody) {
+	public ResponseEntity<? super PatchUserProfileResponseDto> patchUserProfile(@PathVariable(value="email", required = true) String email, @RequestBody @Valid PatchUserProfileRequestDto requestBody) {
 			ResponseEntity<? super PatchUserProfileResponseDto> response = userService.patchUserProfile(email, requestBody);
 		return response;
 	}

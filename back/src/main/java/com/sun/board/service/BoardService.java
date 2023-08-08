@@ -7,6 +7,7 @@ import com.sun.board.dto.request.board.PostBoardRequestDto;
 import com.sun.board.dto.request.board.PostCommentRequestDto;
 import com.sun.board.dto.request.board.PutFavoriteRequestDto;
 import com.sun.board.dto.response.board.DeleteBoardResponseDto;
+import com.sun.board.dto.response.board.GetCurrentBoardResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
 import com.sun.board.dto.response.board.PostBoardResponseDto;
 import com.sun.board.dto.response.board.PostCommentResponseDto;
@@ -15,10 +16,10 @@ import com.sun.board.dto.response.board.PutFavoriteResponseDto;
 public interface BoardService {
 	
 	// method : Top3 게시물 불러오기 메서드 //
-	ResponseEntity<?> getTop3();
+	ResponseEntity<? super GetCurrentBoardResponseDto> getTop3();
 
 	// method : 최신 게시물 리스트 불러오기 메서드 //
-	ResponseEntity<?> getCurrentBoard();
+	ResponseEntity<? super GetCurrentBoardResponseDto> getCurrentBoard();
 
 	// method : 게시물 불러오기 메서드 //
 	ResponseEntity<?> getBoard(Integer boardNumber);

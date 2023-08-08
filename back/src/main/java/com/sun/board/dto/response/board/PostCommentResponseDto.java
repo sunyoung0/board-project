@@ -1,5 +1,8 @@
 package com.sun.board.dto.response.board;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import com.sun.board.common.response.ResponseCode;
 import com.sun.board.common.response.ResponseMessage;
 import com.sun.board.dto.response.ResponseDto;
@@ -15,18 +18,18 @@ public class PostCommentResponseDto extends ResponseDto {
 		super(code, message);
 	}
 
-	public static PostCommentResponseDto success() {
-		PostCommentResponseDto result = new PostCommentResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
-		return result;
-	}
+	public static ResponseEntity<PostCommentResponseDto> success() {
+    PostCommentResponseDto result = new PostCommentResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
+    return ResponseEntity.status(HttpStatus.OK).body(result);
+  }
 
-	public static ResponseDto noExistedUser() {
-		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_USER, ResponseMessage.No_EXISTED_USER);
-		return result;
-	}
+	public static ResponseEntity<ResponseDto> noExistedUser() {
+    ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_USER, ResponseMessage.No_EXISTED_USER);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+  }
 
-	public static ResponseDto noExistedBoard() {
-		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_BOARD, ResponseMessage.No_EXISTED_BOARD);
-		return result;
-	}
+  public static ResponseEntity<ResponseDto> noExistedBoard() {
+    ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_BOARD, ResponseMessage.No_EXISTED_BOARD);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+  }
 }
