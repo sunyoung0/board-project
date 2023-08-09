@@ -11,19 +11,28 @@ import com.sun.board.dto.request.board.PostCommentRequestDto;
 import com.sun.board.dto.request.board.PutFavoriteRequestDto;
 import com.sun.board.dto.response.ResponseDto;
 import com.sun.board.dto.response.board.DeleteBoardResponseDto;
+import com.sun.board.dto.response.board.GetBoardResponseDto;
 import com.sun.board.dto.response.board.GetCurrentBoardResponseDto;
+import com.sun.board.dto.response.board.GetTop3ResponseDto;
+import com.sun.board.dto.response.board.GetUserListResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
 import com.sun.board.dto.response.board.PostBoardResponseDto;
 import com.sun.board.dto.response.board.PostCommentResponseDto;
 import com.sun.board.dto.response.board.PutFavoriteResponseDto;
+import com.sun.board.dto.response.search.GetSearchBoardResponseDto;
 import com.sun.board.dto.response.board.BoardListResponseDto;
 
 import com.sun.board.entity.BoardEntity;
+import com.sun.board.entity.BoardViewEntity;
 import com.sun.board.entity.CommentEntity;
 import com.sun.board.entity.FavoriteEntity;
+import com.sun.board.entity.SearchLogEntity;
+import com.sun.board.entity.resultSet.BoardListResultSet;
 import com.sun.board.repository.BoardRepository;
+import com.sun.board.repository.BoardViewRepository;
 import com.sun.board.repository.CommentRepository;
 import com.sun.board.repository.FavoriteRepository;
+import com.sun.board.repository.SearchLogRepository;
 import com.sun.board.repository.UserRepository;
 import com.sun.board.service.BoardService;
 
@@ -33,27 +42,49 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BoardServiceImplement implements BoardService {
 
+	// 의존성 주입
 	private final BoardRepository boardRepository;
 	private final UserRepository userRepository;
 	private final CommentRepository commentRepository;
 	private final FavoriteRepository favoriteRepository;
+	private final BoardViewRepository boardViewRepository;
+	private final SearchLogRepository searchLogRepository;
 
 	@Override
-	// method : 최신 게시물 불러오기 //
-	public ResponseEntity<? super GetCurrentBoardResponseDto> getTop3() {
+	public ResponseEntity<? super GetTop3ResponseDto> getTop3() {
 
+		List<BoardListResponseDto> top3 = null;
+
+		try {
+
+			// description : 좋아요 순으로 상위 3개 게시물 조회 //
+			List<BoardViewEntity> boardViewEntities = boardViewRepository.findTop3ByOrderByFavoriteCountDesc();
+			
+			// description : entity를 dto 형태로 변환 //
+			top3 = BoardListResponseDto.copyEntityList(boardViewEntities);
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		}
 		
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getCurrentBoard'");
+		return GetTop3ResponseDto.success(top3);
 
 	}
 
 	@Override
 	public ResponseEntity<? super GetCurrentBoardResponseDto> getCurrentBoard() {
+		
 		List<BoardListResponseDto> boardList = null;
 
 		try{
 
+		// description : 최신 게시물 리스트 불러오기 //
+		List<BoardListResultSet> resultSets =	boardRepository.getCurrentList();
+		
+		// description : 검색 결과를 ResponseDto 형태로 변환 //
+		boardList = BoardListResponseDto.copyList(resultSets);
+ 
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return ResponseDto.databaseError();
@@ -63,15 +94,54 @@ public class BoardServiceImplement implements BoardService {
 	}
 
 	@Override
-	public ResponseEntity<?> getBoard(Integer boardNumber) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getBoard'");
+	public ResponseEntity<? super GetBoardResponseDto> getBoard(Integer boardNumber) {
+		
+		BoardViewEntity boardViewEntity = null;
+
+		try{
+
+			// description : 게시물 번호에 해당하는 게시물 조회 //
+			boardViewEntity = boardViewRepository.findByBoardNumber(boardNumber);
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		}
+
+		return GetBoardResponseDto.success(boardViewEntity);
+
 	}
 
 	@Override
-	public ResponseEntity<?> getSearchBoard(String searchWord) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getSearchBoard'");
+	public ResponseEntity<? super GetSearchBoardResponseDto> getSearchBoard(String searchWord, String relationWord) {
+
+		List<BoardListResponseDto> boardList = null;
+
+		try {
+
+			// description : 검색어가 제목과 내용에 포함되어 있는 데이터 조회 //
+			List<BoardViewEntity> boardViewEntities = boardViewRepository.findByTitleContainsOrContentsContainsOrderByWriteDatetimeDesc(searchWord, searchWord);
+
+			// description : entity를 dto형태로 변환 //
+			boardList = BoardListResponseDto.copyEntityList(boardViewEntities);
+
+			// description : 검색어 로그 저장 //
+			SearchLogEntity searchLogEntity = new SearchLogEntity(searchWord, relationWord);
+			searchLogRepository.save(searchLogEntity);
+
+			// description : 첫번째 검색이 아닐 경우 (relationWord가 null이 아닐 경우) //
+			if (relationWord != null) {
+				searchLogEntity = new SearchLogEntity(relationWord, searchWord);
+				searchLogRepository.save(searchLogEntity);
+			}
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		}
+
+		return GetSearchBoardResponseDto.success(boardList);
+
 	}
 
 	@Override
@@ -87,9 +157,25 @@ public class BoardServiceImplement implements BoardService {
 	}
 
 	@Override
-	public ResponseEntity<?> getUserList(String email) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getUserList'");
+	public ResponseEntity<? super GetUserListResponseDto> getUserList(String email) {
+		
+		List<BoardListResponseDto> boardList = null;
+
+		try{
+
+			// description : 특정 이메일에 해당하는 게시물 리스트 조회 //
+			List<BoardViewEntity> boardViewEntities = boardViewRepository.findByWriterEmailOrderByWriteDatetimeDesc(email);
+
+			// description : entity를 dto로 변환 //
+			boardList = BoardListResponseDto.copyEntityList(boardViewEntities);
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		}
+
+		return GetUserListResponseDto.success(boardList);
+
 	}
 
 	@Override

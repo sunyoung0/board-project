@@ -1,7 +1,5 @@
 package com.sun.board.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -20,11 +18,15 @@ import com.sun.board.dto.request.board.PostBoardRequestDto;
 import com.sun.board.dto.request.board.PostCommentRequestDto;
 import com.sun.board.dto.request.board.PutFavoriteRequestDto;
 import com.sun.board.dto.response.board.DeleteBoardResponseDto;
+import com.sun.board.dto.response.board.GetBoardResponseDto;
 import com.sun.board.dto.response.board.GetCurrentBoardResponseDto;
+import com.sun.board.dto.response.board.GetTop3ResponseDto;
+import com.sun.board.dto.response.board.GetUserListResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
 import com.sun.board.dto.response.board.PostBoardResponseDto;
 import com.sun.board.dto.response.board.PostCommentResponseDto;
 import com.sun.board.dto.response.board.PutFavoriteResponseDto;
+import com.sun.board.dto.response.search.GetSearchBoardResponseDto;
 import com.sun.board.service.BoardService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,8 +41,8 @@ public class BoardController {
 	
 	// API : TOP3 게시물 불러오기 메서드 //
 	@GetMapping("/top-3")
-	public ResponseEntity<?> getTop3List() {
-		ResponseEntity<?> response = boardService.getTop3();
+	public ResponseEntity<? super GetTop3ResponseDto> getTop3List() {
+		ResponseEntity<? super GetTop3ResponseDto> response = boardService.getTop3();
 		return response;
 	}
 
@@ -53,15 +55,17 @@ public class BoardController {
 
 	// API : 게시물 불러오기 메서드 //
 	@GetMapping("/{boardNumber}")
-	public ResponseEntity<?> getBoard(@PathVariable("boardNumber") Integer boardNumber) {
-		ResponseEntity<?> response = boardService.getBoard(boardNumber);
+	public ResponseEntity<? super GetBoardResponseDto> getBoard(@PathVariable(value = "boardNumber", required = true) Integer boardNumber) {
+		ResponseEntity<? super GetBoardResponseDto> response = boardService.getBoard(boardNumber);
 		return response;
 	}
 	
 	// API : 검색 게시물 리스트 불러오기 메서드 //
-	@GetMapping("/search/{searchWord}")
-	public ResponseEntity<?> getSearchBoardList(@PathVariable("searchWord") String searchWord) {
-		ResponseEntity<?> response = boardService.getSearchBoard(searchWord);
+	@GetMapping(value = {"/search/{searchWord}", "search/{searchWord}/{relationWord}"})
+	public ResponseEntity<? super GetSearchBoardResponseDto> getSearchBoard(
+		@PathVariable(value = "searchWord", required = true) String searchWord,
+		@PathVariable(value = "relationWord", required = false) String relationWord) {
+		ResponseEntity<? super GetSearchBoardResponseDto> response = boardService.getSearchBoard(searchWord, relationWord);
 		return response;
 	}
 
@@ -81,8 +85,8 @@ public class BoardController {
 
 	// API : 특정 유저의 게시물 리스트 불러오기 메서드 //
 	@GetMapping("/user-list/{email}")
-	public ResponseEntity<?> getUserList(@PathVariable("email") String email) {
-		ResponseEntity<?> response = boardService.getUserList(email);
+	public ResponseEntity<? super GetUserListResponseDto> getUserList(@PathVariable(value = "email", required = true) String email) {
+		ResponseEntity<? super GetUserListResponseDto> response = boardService.getUserList(email);
 		return response;
 	}
 

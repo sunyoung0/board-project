@@ -7,25 +7,29 @@ import com.sun.board.dto.request.board.PostBoardRequestDto;
 import com.sun.board.dto.request.board.PostCommentRequestDto;
 import com.sun.board.dto.request.board.PutFavoriteRequestDto;
 import com.sun.board.dto.response.board.DeleteBoardResponseDto;
+import com.sun.board.dto.response.board.GetBoardResponseDto;
 import com.sun.board.dto.response.board.GetCurrentBoardResponseDto;
+import com.sun.board.dto.response.board.GetTop3ResponseDto;
+import com.sun.board.dto.response.board.GetUserListResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
 import com.sun.board.dto.response.board.PostBoardResponseDto;
 import com.sun.board.dto.response.board.PostCommentResponseDto;
 import com.sun.board.dto.response.board.PutFavoriteResponseDto;
+import com.sun.board.dto.response.search.GetSearchBoardResponseDto;
 
 public interface BoardService {
 	
 	// method : Top3 게시물 불러오기 메서드 //
-	ResponseEntity<? super GetCurrentBoardResponseDto> getTop3();
+	ResponseEntity<? super GetTop3ResponseDto> getTop3();
 
 	// method : 최신 게시물 리스트 불러오기 메서드 //
 	ResponseEntity<? super GetCurrentBoardResponseDto> getCurrentBoard();
 
 	// method : 게시물 불러오기 메서드 //
-	ResponseEntity<?> getBoard(Integer boardNumber);
+	ResponseEntity<? super GetBoardResponseDto> getBoard(Integer boardNumber);
 
 	// method : 검색 게시물 리스트 불러오기 메서드 //
-	ResponseEntity<?> getSearchBoard(String searchWord);
+	ResponseEntity<? super GetSearchBoardResponseDto> getSearchBoard(String searchWord, String relationWord);
 
 	// method : 특정 게시물의 좋아요 리스트 불러오기 메서드 //
 	ResponseEntity<?> getFavoriteList(Integer boardNumber);
@@ -34,7 +38,7 @@ public interface BoardService {
 	ResponseEntity<?> getCommentList(Integer boardNumber);
 
 	// method : 특정 유저의 게시물 리스트 불러오기 메서드 //
-	ResponseEntity<?> getUserList(String email);
+	ResponseEntity<? super GetUserListResponseDto> getUserList(String email);
 
 	// method : 게시물 작성 메서드 //
 	ResponseEntity<? super PostBoardResponseDto> postBoard(PostBoardRequestDto dto);

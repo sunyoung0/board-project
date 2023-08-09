@@ -21,4 +21,9 @@ public class SearchLogEntity {
 	private int logSequence;
 	private String searchWord;
 	private String relationWord;
+
+	public SearchLogEntity(String searchWord, String relationWord) {
+		this.searchWord = searchWord;
+		this.relationWord = relationWord;
+	}
 }
