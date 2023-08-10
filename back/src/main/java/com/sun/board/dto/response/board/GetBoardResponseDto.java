@@ -1,6 +1,5 @@
 package com.sun.board.dto.response.board;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -39,5 +38,10 @@ public class GetBoardResponseDto extends ResponseDto {
 	public static ResponseEntity<GetBoardResponseDto> success(BoardViewEntity boardViewEntity) {
 		GetBoardResponseDto result = new GetBoardResponseDto(ResponseCode.SUCCESS, ResponseMessage.SUCCESS, boardViewEntity);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
+
+	public static ResponseEntity<ResponseDto> noExistedBoard() {
+		ResponseDto result = new ResponseDto(ResponseCode.No_EXISTED_BOARD, ResponseMessage.No_EXISTED_BOARD);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 	}
 }

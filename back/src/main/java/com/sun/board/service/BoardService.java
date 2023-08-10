@@ -8,7 +8,9 @@ import com.sun.board.dto.request.board.PostCommentRequestDto;
 import com.sun.board.dto.request.board.PutFavoriteRequestDto;
 import com.sun.board.dto.response.board.DeleteBoardResponseDto;
 import com.sun.board.dto.response.board.GetBoardResponseDto;
+import com.sun.board.dto.response.board.GetCommentListResponseDto;
 import com.sun.board.dto.response.board.GetCurrentBoardResponseDto;
+import com.sun.board.dto.response.board.GetFavoriteListResponseDto;
 import com.sun.board.dto.response.board.GetTop3ResponseDto;
 import com.sun.board.dto.response.board.GetUserListResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
@@ -32,10 +34,10 @@ public interface BoardService {
 	ResponseEntity<? super GetSearchBoardResponseDto> getSearchBoard(String searchWord, String relationWord);
 
 	// method : 특정 게시물의 좋아요 리스트 불러오기 메서드 //
-	ResponseEntity<?> getFavoriteList(Integer boardNumber);
+	ResponseEntity<? super GetFavoriteListResponseDto> getFavoriteList(Integer boardNumber);
 
 	// method : 특정 게시물의 댓글 리스트 불러오기 메서드 //
-	ResponseEntity<?> getCommentList(Integer boardNumber);
+	ResponseEntity<? super GetCommentListResponseDto> getCommentList(Integer boardNumber);
 
 	// method : 특정 유저의 게시물 리스트 불러오기 메서드 //
 	ResponseEntity<? super GetUserListResponseDto> getUserList(String email);

@@ -46,9 +46,30 @@ public class BoardEntity {
     this.writerEmail = dto.getWriterEmail();
   }
 
+	// 수정 시
 	public void patch(PatchBoardRequestDto dto) {
 		this.title = dto.getTitle();
 		this.contents = dto.getContents();
 		this.imageUrl = dto.getImageUrl();
+	}
+
+	// 조회수 증가
+	public void increaseViewCount() {
+		this.viewCount++;
+	}
+
+	// 댓글 수 증가
+	public void increaseCommentCount() {
+		this.commentCount++;
+	}
+
+	// 좋아요 수 증가
+	public void increaseFavoriteCount() {
+		this.favoriteCount++;
+	}
+
+	// 좋아요 수 감소
+	public void decreaseFavoriteCount() {
+		this.favoriteCount--;
 	}
 }
