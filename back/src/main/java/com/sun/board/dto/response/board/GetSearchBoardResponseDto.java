@@ -1,4 +1,4 @@
-package com.sun.board.dto.response.search;
+package com.sun.board.dto.response.board;
 
 import java.util.List;
 
@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import com.sun.board.common.response.ResponseCode;
 import com.sun.board.common.response.ResponseMessage;
 import com.sun.board.dto.response.ResponseDto;
-import com.sun.board.dto.response.board.BoardListResponseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

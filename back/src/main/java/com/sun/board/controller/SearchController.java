@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sun.board.dto.response.search.GetPopularListResponseDto;
+import com.sun.board.dto.response.search.GetRelationListResponseDto;
 import com.sun.board.service.SearchService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,15 +22,15 @@ public class SearchController {
 	
 	// API : 인기 검색어 리스트 불러오기 메서드 //
 	@GetMapping("/popular")
-	public ResponseEntity<?> getPopularList() {
-		ResponseEntity<?> response = searchService.getPopularList();
+	public ResponseEntity<? super GetPopularListResponseDto> getPopularList() {
+		ResponseEntity<? super GetPopularListResponseDto> response = searchService.getPopularList();
 		return response;
 	}
 
 	// API : 연관 검색어 리스트 불러오기 메서드 //
 	@GetMapping("/relation/{searchWord}")
-	public ResponseEntity<?> getRelationList(@PathVariable("searchWord") String searchWord) {
-		ResponseEntity<?> response = searchService.getRelationList(searchWord);
+	public ResponseEntity<? super GetRelationListResponseDto> getRelationList(@PathVariable(value = "searchWord", required = true) String searchWord) {
+		ResponseEntity<? super GetRelationListResponseDto> response = searchService.getRelationList(searchWord);
 		return response;
 	}
 }

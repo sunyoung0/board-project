@@ -16,13 +16,13 @@ import com.sun.board.dto.response.board.GetBoardResponseDto;
 import com.sun.board.dto.response.board.GetCommentListResponseDto;
 import com.sun.board.dto.response.board.GetCurrentBoardResponseDto;
 import com.sun.board.dto.response.board.GetFavoriteListResponseDto;
+import com.sun.board.dto.response.board.GetSearchBoardResponseDto;
 import com.sun.board.dto.response.board.GetTop3ResponseDto;
 import com.sun.board.dto.response.board.GetUserListResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
 import com.sun.board.dto.response.board.PostBoardResponseDto;
 import com.sun.board.dto.response.board.PostCommentResponseDto;
 import com.sun.board.dto.response.board.PutFavoriteResponseDto;
-import com.sun.board.dto.response.search.GetSearchBoardResponseDto;
 import com.sun.board.dto.response.board.BoardListResponseDto;
 import com.sun.board.dto.response.board.CommentListResponseDto;
 import com.sun.board.entity.BoardEntity;
@@ -147,12 +147,6 @@ public class BoardServiceImplement implements BoardService {
 			// description : 검색어 로그 저장 //
 			SearchLogEntity searchLogEntity = new SearchLogEntity(searchWord, relationWord);
 			searchLogRepository.save(searchLogEntity);
-
-			// description : 첫번째 검색이 아닐 경우 (relationWord가 null이 아닐 경우) //
-			if (relationWord != null) {
-				searchLogEntity = new SearchLogEntity(relationWord, searchWord);
-				searchLogRepository.save(searchLogEntity);
-			}
 
 		} catch (Exception exception) {
 			exception.printStackTrace();

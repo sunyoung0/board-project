@@ -22,13 +22,13 @@ import com.sun.board.dto.response.board.GetBoardResponseDto;
 import com.sun.board.dto.response.board.GetCommentListResponseDto;
 import com.sun.board.dto.response.board.GetCurrentBoardResponseDto;
 import com.sun.board.dto.response.board.GetFavoriteListResponseDto;
+import com.sun.board.dto.response.board.GetSearchBoardResponseDto;
 import com.sun.board.dto.response.board.GetTop3ResponseDto;
 import com.sun.board.dto.response.board.GetUserListResponseDto;
 import com.sun.board.dto.response.board.PatchBoardResponseDto;
 import com.sun.board.dto.response.board.PostBoardResponseDto;
 import com.sun.board.dto.response.board.PostCommentResponseDto;
 import com.sun.board.dto.response.board.PutFavoriteResponseDto;
-import com.sun.board.dto.response.search.GetSearchBoardResponseDto;
 import com.sun.board.service.BoardService;
 
 import lombok.RequiredArgsConstructor;
