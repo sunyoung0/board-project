@@ -20,7 +20,7 @@ public class JwtProvider {
 	public String create(String email) {
 
 		// description : 토큰 만료 기간 //
-		Date expiredDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+		Date expiredDate = Date.from(Instant.now().plus(5, ChronoUnit.HOURS));
 
 		// description : JWT 생성 //
 		String jwt = Jwts.builder().signWith(SignatureAlgorithm.HS256, secretKey)
