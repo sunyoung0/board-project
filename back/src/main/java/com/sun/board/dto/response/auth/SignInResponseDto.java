@@ -15,6 +15,7 @@ import lombok.Getter;
 public class SignInResponseDto extends ResponseDto {
 	
 	private String token;
+	private int expiredTime;
 
 	// AllArgsConstructor
 	// private SignInResponseDto (String token) {
@@ -24,6 +25,7 @@ public class SignInResponseDto extends ResponseDto {
 	private SignInResponseDto (String code, String message, String token) {
 		super(code, message);
 		this.token = token;
+		this.expiredTime = 3600 * 5;	// 5시간
 	}
 
 	// 인스턴스를 만들어주는 메서드

@@ -3,6 +3,8 @@ package com.sun.board.service.implement;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.sun.board.dto.request.auth.SignInRequestDto;
@@ -11,6 +13,7 @@ import com.sun.board.dto.response.ResponseDto;
 import com.sun.board.dto.response.auth.SignInResponseDto;
 import com.sun.board.dto.response.auth.SignUpResponseDto;
 import com.sun.board.entity.UserEntity;
+import com.sun.board.provider.JwtProvider;
 import com.sun.board.repository.UserRepository;
 import com.sun.board.service.AuthService;
 
@@ -21,6 +24,9 @@ import lombok.RequiredArgsConstructor;
 public class AuthServiceImplement implements AuthService {
 
 	private final UserRepository userRepository;
+	private final JwtProvider jwtProvider;
+
+	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@Override
 	// method : 로그인 //
@@ -39,11 +45,12 @@ public class AuthServiceImplement implements AuthService {
 		if(userEntity == null) return SignInResponseDto.signInDataMismatch();
 
 		// description : 비밀번호 일치여부 확인 //
-		boolean entityPassword = userEntity.getPassword().equals(password);
+		String encodedPassword = userEntity.getPassword();
+		boolean entityPassword = passwordEncoder.matches(password, encodedPassword);
 		if(!entityPassword) return SignInResponseDto.signInDataMismatch();
 
-		// TODO : Security 적용 후 변경 //
-		token = UUID.randomUUID().toString();
+		// description : JWT 생성 //
+		token = jwtProvider.create(email);
 
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -58,6 +65,7 @@ public class AuthServiceImplement implements AuthService {
 	public ResponseEntity<? super SignUpResponseDto> signUp(SignUpRequestDto dto) {
 
 		String email = dto.getEmail();
+		String password = dto.getPassword();
 		String nickname = dto.getNickname();
 		String telNumber = dto.getTelNumber();
 
@@ -73,6 +81,12 @@ public class AuthServiceImplement implements AuthService {
       // description: 전화번호 중복 확인 //
       boolean hasTelNumber = userRepository.existsByTelNumber(telNumber);
       if (hasTelNumber) return SignUpResponseDto.existedTelNumber();
+
+			// description : 비밀번호 암호화 //
+			password = passwordEncoder.encode(password);
+
+			// description : dto의 password 변경 //
+			dto.setPassword(password);
 			
 			// description : Entity 생성 //
 			UserEntity userEntity = new UserEntity(dto);

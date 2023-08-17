@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.sun.board.dto.request.user.PatchUserNicknameRequestDto;
 import com.sun.board.dto.request.user.PatchUserProfileRequestDto;
 import com.sun.board.dto.response.ResponseDto;
+import com.sun.board.dto.response.user.GetSignInUserResponseDto;
 import com.sun.board.dto.response.user.GetUserResponseDto;
 import com.sun.board.dto.response.user.PatchUserNicknameResponseDto;
 import com.sun.board.dto.response.user.PatchUserProfileResponseDto;
@@ -44,9 +45,25 @@ public class UserServiceImplement implements UserService {
 	}
 
 	@Override
-	public ResponseEntity<?> getSignInUser() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getSignInUser'");
+	public ResponseEntity<? super GetSignInUserResponseDto> getSignInUser(String email) {
+
+		UserEntity userEntity = null;
+
+		try {
+			
+			// description : 이메일로 유저 정보 불러오기 //
+			userEntity = userRepository.findByEmail(email);
+
+			// description : 존재하는 유저인지 확인 //
+			if (userEntity == null) return GetSignInUserResponseDto.noExistedUser();
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		}
+
+		return GetSignInUserResponseDto.success(userEntity);
+
 	}
 
 	@Override

@@ -10,10 +10,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PatchBoardRequestDto {
-	
-	@NotBlank
-	private String userEmail;
-	
 	@NotBlank
 	private String title;
 
