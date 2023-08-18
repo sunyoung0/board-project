@@ -2,7 +2,7 @@ package com.sun.board.common.response;
 
 public interface ResponseCode {
 
-	public static final String SUCCESS = "Su";
+	public static final String SUCCESS = "SU";
 
 	public static final String VALIDATE_FAIL = "VF";
 

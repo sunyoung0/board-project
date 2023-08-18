@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useCookies } from "react-cookie";
 import axios from 'axios';
 
 import { useBoardWriteStore, useUserStore } from 'src/stores';
@@ -7,7 +8,6 @@ import { AUTH_PATH, BOARD_DETAIL_PATH, BOARD_UPDATE_PATH, BOARD_WRITE_PATH, MAIN
 import './style.css';
 import PostBoardRequestDto from 'src/interfaces/request/post-board.request.dto';
 import PatchBoardRequestDto from 'src/interfaces/request/patch-board.request.dto';
-import BoardDetail from 'src/views/Board/Detail';
 
 //					component					//
 // description : Header 레이아웃 //
@@ -22,6 +22,9 @@ export default function Header() {
 	
 	// description : 게시물 작성 데이터 상태 //
 	const { boardTitle, boardContent, resetBoard } = useBoardWriteStore();
+
+	// description : Cookie 상태 //
+	const [cookies, setCookie] = useCookies();
 
 	// description : 검색 아이콘 클릭 상태 //
 	const [searchState, setSearchState] = useState<boolean>(false);
@@ -90,6 +93,7 @@ export default function Header() {
 
 	// description : 로그아웃 버튼 클릭 이벤트 //
 	const onSignOutButtonClickHandler = () => {
+		setCookie('accessToken', '', { expires: new Date(), path: MAIN_PATH });		// 토큰 값을 빈 문자열로 바꾸고 만료시간을 현재시간으로 바꾸면 세팅 되자마자 만료됨
 		setLogin(false);
 		setUser(null);
 		navigator(MAIN_PATH);
@@ -104,14 +108,6 @@ export default function Header() {
 				content:boardContent,
 				imageUrl:''
 			}
-			axios.post('url', data)
-			.then((response) => {
-				resetBoard();
-				navigator(MAIN_PATH);
-			})
-			.catch((error) => {
-
-			})
 		}
 		else {
 			// todo : boardNumber 받아오기
@@ -121,14 +117,6 @@ export default function Header() {
 				contents: boardContent,
 				imageUrl:''
 			}
-			axios.patch('url',data)
-			.then((response) => {
-				resetBoard();
-				navigator(BOARD_DETAIL_PATH(1));
-			})
-			.catch((error) => {
-
-			})
 		}
 	}
 

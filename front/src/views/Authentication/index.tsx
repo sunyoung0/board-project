@@ -1,9 +1,9 @@
-import axios from "axios";
 import { useState } from "react";
-import { Address, useDaumPostcodePopup } from "react-daum-postcode";
 import { useNavigate } from "react-router-dom";
+import { Address, useDaumPostcodePopup } from "react-daum-postcode";
+import { useCookies } from "react-cookie";
 
-import { signUpRequest } from "src/apis";
+import { SignInRequest, getSignInUserRequest, signUpRequest } from "src/apis";
 import InputBox from "src/components/InputBox";
 import {
   INPUT_ICON,
@@ -11,16 +11,23 @@ import {
   emailPattern,
   telNumberPattern,
 } from "src/constants";
-import SignUpRequestDto from "src/interfaces/request/auth/sign-up.request.dto";
-import SignInRequestDto from "src/interfaces/request/sign-in.request.dto";
+import { SignInRequestDto, SignUpRequestDto } from "src/interfaces/request/auth";
 import { signInMock, userMock } from "src/mocks";
 import { useUserStore } from "src/stores";
 import "./style.css";
+import { SignInResponseDto } from "src/interfaces/response/auth";
+import ResponseDto from "src/interfaces/response/response.dto";
+import { GetLoginUserResponseDto } from "src/interfaces/response/user";
+
+
 
 //          component         //
 // description : 인증 화면 //
 export default function Authentication() {
   //          state         //
+  // description : cookie 상태 //
+  const [cookies, setCookie] = useCookies();  //쿠키의 정보를 불러오고 세팅할 수 있는 함수 cookies 저장되어있는걸 불러옴 setCookie 세팅하는 것
+
   // description : 로그인 혹은 회원가입 뷰 상태 //
   // 타입 스크립트의 리터럴 타입 setView()에 'sign-in' 또는 'sign-up'만 넣을 수 있음, 일회성
   const [view, setView] = useState<"sign-in" | "sign-up">("sign-in");
@@ -53,6 +60,21 @@ export default function Authentication() {
     const [password, setPassword] = useState<string>(signInMock.password);
 
     //          function          //
+    const signInResponseHandler = (result : SignInResponseDto | ResponseDto) => {
+      const { code } = result;
+      if (code === 'DM') setError(true);
+      if (code === 'DE') alert('데이터베이스 에러입니다.');
+      if (code !== 'SU') return;
+
+      const { token, expiredTime } = result as SignInResponseDto;     // as SignInResponseDto : 변수의 타입을 강제로 지칭(강제 형변환)
+
+      const now = new Date().getTime();           // getTime() 날짜를 숫자로 바꿈
+      const expires = new Date(now + expiredTime * 1000);
+
+      setCookie("accessToken", token, { expires });
+      navigator("/");
+
+    }
 
     //          event handler         //
     //  description : 비밀번호 타입 변경 버튼 클릭 이벤트 //
@@ -67,31 +89,14 @@ export default function Authentication() {
 
     //  description : 로그인 버튼 클릭 이벤트 //
     const onSignInButtonClickHandler = async () => {
-      if (email !== signInMock.email || password !== signInMock.password) {
-        setError(true);
-        return;
-      }
 
       const data: SignInRequestDto = {
         email,
-        password,
+        password
       };
 
-      axios
-        .get("http://localhost:3000")
-        .then((response) => console.log(response));
-
-      axios
-        .post("url", data)
-        .then((response) => {
-          // todo: 성공 시 처리
-          setUser(userMock);
-          navigator(MAIN_PATH);
-        })
-        .catch((error) => {
-          // todo: 실패 시 처리
-        });
-    };
+      SignInRequest(data).then(signInResponseHandler);
+    }
 
     //          component         //
 
@@ -177,8 +182,12 @@ export default function Authentication() {
       useState<boolean>(false);
     //  description : 닉네임 에러 상태 //
     const [nicknameError, setNicknameError] = useState<boolean>(false);
+    //  description : 닉네임 중복 에러 상태 //
+    const [nicknameDuplicationError, setNicknameDuplicationError] = useState<boolean>(false);
     //  description : 휴대전화번호 패턴 에러 상태 //
     const [telNumberError, setTelNumberError] = useState<boolean>(false);
+    //  description : 휴대전화번호 중복 에러 상태 //
+    const [telNumberDuplicationError, setTelNumberDuplicationError] = useState<boolean>(false);
     //  description : 주소 에러 상태
     const [addressError, setAddressError] = useState<boolean>(false);
 
@@ -230,10 +239,28 @@ export default function Authentication() {
         addressDetail,
       };
 
-      signUpRequest(data).then((response) => {
-        console.log(response);
-      });
+      signUpRequest(data).then(signUpResponseHandler);
     };
+
+    const signUpResponseHandler = (code: string) => {
+      // description : SU - 성공 //
+      if (code === 'SU') setView('sign-in');
+      // description : EE - 존재하는 이메일 //
+      if (code === 'EE') {
+        setEmailDuplicationError(true);
+        setPage(1);
+      }
+      // description : EN - 존재하는 닉네임 //
+      if (code === 'EN') {
+        setNicknameDuplicationError(true);
+      }
+      // description : ET - 존재하는 전화번호  //
+      if (code === 'ET') {
+        setTelNumberDuplicationError(true);
+      }
+      // description : DE - 데이터베이스 에러 //
+      if (code === 'DE') alert('데이터베이스 오류입니다.');
+    }
 
     //            event handler         //
     // description : 비밀번호 타입 변경 버튼 클릭 이벤트 //
@@ -253,6 +280,15 @@ export default function Authentication() {
 
     // description : 다음 혹은 회원 가입 버튼 클릭 이벤트 //
     const onButtonClickHandler = () => {
+      setEmailPatternError(false);
+      setPasswordError(false);
+      setPasswordCheckError(false);
+      setNicknameError(false);
+      setNicknameDuplicationError(false);
+      setTelNumberError(false);
+      setTelNumberDuplicationError(false);
+      setAddressError(false);
+
       if (page === 1) checkPage1();
       if (page === 2) checkPage2();
     };
@@ -331,8 +367,8 @@ export default function Authentication() {
                   label="닉네임*"
                   type="text"
                   placeholder="닉네임을 입력해주세요."
-                  error={nicknameError}
-                  helper={nicknameError ? "닉네임을 입력해주세요." : ""}
+                  error={nicknameError || nicknameDuplicationError}
+                  helper={nicknameError ? "닉네임을 입력해주세요." : nicknameDuplicationError ? "중복되는 닉네임입니다. " : ""}
                   value={nickname}
                   setValue={setNickname}
                 />
@@ -340,8 +376,8 @@ export default function Authentication() {
                   label="핸드폰 번호*"
                   type="text"
                   placeholder="핸드폰 번호를 입력해주세요."
-                  error={telNumberError}
-                  helper={telNumberError ? "숫자만 입력해주세요." : ""}
+                  error={telNumberError || telNumberDuplicationError}
+                  helper={telNumberError ? "숫자만 입력해주세요." : telNumberDuplicationError ? "중복되는 휴대전화번호입니다." : ""}
                   value={telNumber}
                   setValue={setTelNumber}
                 />
