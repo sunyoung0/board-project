@@ -4,7 +4,7 @@ export default interface GetBoardResponseDto extends ResponseDto {
 	boardNumber: number;
 	title: string;
 	contents: string;
-	ImageUrl: string | null;
+	imageUrl: string | null;
 	writeDatetime: string;
 	writerEmail: string;
 	writerProfileImage: string | null;

@@ -21,7 +21,7 @@ export default function Main() {
   //          state         //
 
   //          function          //
-  // description : 페이지 이동을 위한 네비데이트 함수 //
+  // description : 페이지 이동을 위한 네비게이트 함수 //
   const navigator = useNavigate();
 
   //           component            //
@@ -112,6 +112,7 @@ export default function Main() {
         setCurrentList(response.data);
       })
       .catch((error) => {
+        changeSection(72, COUNT_BY_PAGE);
         setCurrentList(currentBoardListMock);
       })
 

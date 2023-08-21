@@ -1,5 +1,5 @@
 export default interface PostBoardRequestDto {
 	title: string;
-	content: string;
+	contents: string;
 	imageUrl?: string | null;
 }
