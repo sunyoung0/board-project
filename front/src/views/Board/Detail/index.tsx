@@ -9,7 +9,7 @@ import { usePagination } from 'src/hooks';
 import { useUserStore } from 'src/stores';
 
 import { useCookies } from 'react-cookie';
-import { getBoardRequest, getCommentListRequest, getFavoriteListRequest, postCommentRequest, putFavoriteRequest } from 'src/apis';
+import { deleteBoardRequest, getBoardRequest, getCommentListRequest, getFavoriteListRequest, postCommentRequest, putFavoriteRequest } from 'src/apis';
 import { PostCommentRequestDto } from 'src/interfaces/request/board';
 import { GetBoardResponseDto, GetCommentListResponseDto, GetFavoriteListResponseDto } from 'src/interfaces/response/board';
 import { CommentListResponseDto } from 'src/interfaces/response/board/get-comment-list.response.dto';
@@ -133,8 +133,9 @@ export default function BoardDetail() {
     const [favorite, setFavorite] = useState<boolean>(false);
 
     //          function          //
+    // description : 좋아요 응답 처리 함수 //
     const putFavoriteResponseHandler = (code: string) => {
-      if (code === 'NE') alert('존재하지 않는 유저입니다.');
+      if (code === 'NU') alert('존재하지 않는 유저입니다.');
       if (code === 'NB') alert('존재하지 않는 게시물입니다.');
       if (code === 'VF') alert('잘못된 입력입니다.');
       if (code === 'DE') alert('데이터베이스 에러입니다.');
@@ -142,7 +143,19 @@ export default function BoardDetail() {
 
       if (!boardNumber) return;
       getFavoriteListRequest(boardNumber).then(getFavoriteResponseHandler);
+    }
 
+    // description : 게시물 삭제 응답 처리 함수 //
+    const DeleteBoardResponseHandler = (code: string) => {
+      if (code === 'NU') alert('존재하지 않는 유저입니다.');
+      if (code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if (code === 'NP') alert('권한이 없습니다.');
+      if (code === 'VF') alert('잘못된 입력입니다.');
+      if (code === 'DE') alert('데이터베이스 에러입니다.');
+      if (code !== 'SU') return;
+
+      alert('게시물 삭제에 성공했습니다.');
+      navigator(MAIN_PATH);
     }
 
     //          event handler          //
@@ -165,7 +178,9 @@ export default function BoardDetail() {
 
     // description : 삭제 버튼 클릭 이벤트 //
     const onDeleteButtonClickHandler = () => {
-     
+     if (!boardNumber) return;
+     const token = cookie.accessToken;
+      deleteBoardRequest(boardNumber, token).then(DeleteBoardResponseHandler);
     }
 
     // description: 좋아요 버튼 클릭 이벤트 //

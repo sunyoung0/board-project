@@ -23,6 +23,7 @@ import {
   PutFavoriteResponseDto,
 } from "src/interfaces/response/board";
 import ResponseDto from "src/interfaces/response/response.dto";
+import { GetPopularListResponseDto, GetRelationListResponseDto } from "src/interfaces/response/search";
 import {
   GetLoginUserResponseDto,
   GetUserResponseDto,
@@ -125,9 +126,13 @@ export const getPopularListRequest = async () => {
   const result = await axios
     .get(GET_POPULAR_LIST_URL())
     .then((response) => {
-      return response;
+      const responseBody: GetPopularListResponseDto = response.data;
+      return responseBody;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
 
   return result;
 };
@@ -147,9 +152,13 @@ export const getRelationListRequest = async (searchWord: string) => {
   const result = await axios
     .get(GET_RELATION_LIST_URL(searchWord))
     .then((response) => {
-      return response;
+      const responseBody: GetRelationListResponseDto = response.data;
+      return responseBody;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
 
   return result;
 };
@@ -204,11 +213,7 @@ export const putFavoriteRequest = async (
   token: string
 ) => {
   const result = await axios
-    .put(
-      PUT_FAVORITE_URL(boardNumber),
-      {},
-      { headers: { Authorization: `Bearer ${token}` } }
-    )
+    .put(PUT_FAVORITE_URL(boardNumber), {}, { headers: { Authorization: `Bearer ${token}` } })
     .then((response) => {
       const responseBody: PutFavoriteResponseDto = response.data;
       const { code } = responseBody;
