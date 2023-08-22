@@ -8,12 +8,14 @@ import { usePagination } from 'src/hooks';
 
 import { useUserStore } from 'src/stores';
 
-import './style.css';
-import { getBoardRequest, getCommentListRequest, getFavoriteListRequest } from 'src/apis';
+import { useCookies } from 'react-cookie';
+import { getBoardRequest, getCommentListRequest, getFavoriteListRequest, postCommentRequest, putFavoriteRequest } from 'src/apis';
+import { PostCommentRequestDto } from 'src/interfaces/request/board';
 import { GetBoardResponseDto, GetCommentListResponseDto, GetFavoriteListResponseDto } from 'src/interfaces/response/board';
-import ResponseDto from 'src/interfaces/response/response.dto';
-import { FavoriteListResponseDto } from 'src/interfaces/response/board/get-favorite-list.response.dto';
 import { CommentListResponseDto } from 'src/interfaces/response/board/get-comment-list.response.dto';
+import { FavoriteListResponseDto } from 'src/interfaces/response/board/get-favorite-list.response.dto';
+import ResponseDto from 'src/interfaces/response/response.dto';
+import './style.css';
 
 // 7/25 강의 영상도 보기 앞 2시간만
 //          component          //
@@ -28,6 +30,9 @@ export default function BoardDetail() {
 
   // description : 페이지네이션 관련 상태 및 함수 //
   const { totalPage, currentPage, currentSection, onPageClickHandler, onPreviousClickHandler, onNextClickHandler, changeSection } = usePagination();
+
+  // description : Cookie 상태 //
+  const [cookie, setCookies] = useCookies();
 
   // description: 게시물 정보 상태 //
   const [board, setBoard] = useState<GetBoardResponseDto | null>(null);
@@ -128,6 +133,17 @@ export default function BoardDetail() {
     const [favorite, setFavorite] = useState<boolean>(false);
 
     //          function          //
+    const putFavoriteResponseHandler = (code: string) => {
+      if (code === 'NE') alert('존재하지 않는 유저입니다.');
+      if (code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if (code === 'VF') alert('잘못된 입력입니다.');
+      if (code === 'DE') alert('데이터베이스 에러입니다.');
+      if (code !== 'SU') return;
+
+      if (!boardNumber) return;
+      getFavoriteListRequest(boardNumber).then(getFavoriteResponseHandler);
+
+    }
 
     //          event handler          //
     // description : 작성자 닉네임 클릭 이벤트 //
@@ -154,7 +170,9 @@ export default function BoardDetail() {
 
     // description: 좋아요 버튼 클릭 이벤트 //
     const onFavoriteButtonClickHandler = () => {
-      setFavorite(!favorite);
+      if (!boardNumber) return;
+      const token = cookie.accessToken;
+      putFavoriteRequest(boardNumber, token).then(putFavoriteResponseHandler);
     }
 
     // description: 좋아요 리스트 펼치기 클릭 이벤트 //
@@ -285,11 +303,33 @@ export default function BoardDetail() {
     const [comment, setComment] = useState<string>('');
 
     //          function          //
+    // description : 댓글 작성 응답 처리 함수 //
+    const PostCommentResponseHandler = (code: string) => {
+      if (code === 'NU') alert('존재하지 않는 유저입니다.');
+      if (code === 'NB') alert('존재하지 않는 게시물입니다.');
+      if (code === 'VF') alert('잘못된 입력입니다.');
+      if (code === 'DB') alert('데이터베이스 에러입니다.');
+      if (code !== 'SU') return;
+
+      if (!boardNumber) return;
+      getCommentListRequest(boardNumber).then(getCommentResponseHandler);
+
+    }
 
     //          event handler         //
     // description : 사용자 댓글 입력 변경 이벤트 //
     const onCommentChangeHandler = (event:ChangeEvent<HTMLTextAreaElement>) => {
       setComment(event.target.value);
+    }
+    
+    // description : 댓글 작성 버튼 클릭 이벤트 //
+    const onCommentButtonClickHandler = () => {
+      if (!boardNumber) return;
+      const token = cookie.accessToken;
+      const data: PostCommentRequestDto = {
+        contents: comment
+      }
+      postCommentRequest(boardNumber, data, token).then(PostCommentResponseHandler);
     }
 
     //          component       //
@@ -312,7 +352,7 @@ export default function BoardDetail() {
 				<div className='comment-box'>
 					<textarea className='comment-textarea' placeholder='댓글을 작성해주세요.' rows={3} value={comment} onChange={onCommentChangeHandler}></textarea>
 					<div className='comment-button-box'>
-            { comment ? (<div className='black-button'>댓글달기</div>) : (<div className='disable-button'> 댓글달기</div>)}
+            { comment ? (<div className='black-button' onClick={onCommentButtonClickHandler}>댓글달기</div>) : (<div className='disable-button'> 댓글달기</div>)}
 					</div>
 				</div>
 			</div>

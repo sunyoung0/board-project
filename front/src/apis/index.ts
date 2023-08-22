@@ -1,10 +1,32 @@
 import axios from "axios";
-import { SignInRequestDto, SignUpRequestDto } from "src/interfaces/request/auth";
-import { PatchBoardRequestDto, PostBoardRequestDto } from "src/interfaces/request/board";
-import { SignInResponseDto, SignUpResponseDto } from "src/interfaces/response/auth";
-import { GetBoardResponseDto, GetCommentListResponseDto, GetFavoriteListResponseDto, PatchBoardResponseDto, PostBoardResponseDto } from "src/interfaces/response/board";
+import {
+  SignInRequestDto,
+  SignUpRequestDto,
+} from "src/interfaces/request/auth";
+import {
+  PatchBoardRequestDto,
+  PostBoardRequestDto,
+  PostCommentRequestDto,
+} from "src/interfaces/request/board";
+import {
+  SignInResponseDto,
+  SignUpResponseDto,
+} from "src/interfaces/response/auth";
+import {
+  DeleteBoardResponseDto,
+  GetBoardResponseDto,
+  GetCommentListResponseDto,
+  GetFavoriteListResponseDto,
+  PatchBoardResponseDto,
+  PostBoardResponseDto,
+  PostCommentResponseDto,
+  PutFavoriteResponseDto,
+} from "src/interfaces/response/board";
 import ResponseDto from "src/interfaces/response/response.dto";
-import { GetLoginUserResponseDto, GetUserResponseDto } from "src/interfaces/response/user";
+import {
+  GetLoginUserResponseDto,
+  GetUserResponseDto,
+} from "src/interfaces/response/user";
 
 const API_DOMAIN = "http://localhost:4040/api/v1";
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
@@ -14,20 +36,30 @@ const GET_TOP3_BOARD_LIST_URL = () => `${API_DOMAIN}/board/top-3`;
 const GET_CURRENT_BOARD_LIST_URL = () => `${API_DOMAIN}/board/current-board`;
 const GET_POPULAR_LIST_URL = () => `${API_DOMAIN}/search/popular`;
 
-const GET_SEARCH_BOARD_LIST_URL = (searchWord: string) => `${API_DOMAIN}/board/search/${searchWord}`;
-const GET_RELATION_LIST_URL = (searchWord: string) => `${API_DOMAIN}/search/relation/${searchWord}`;
-const GET_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
-const GET_FAVORITE_LIST_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite-list`;
-const GET_COMMENT_LIST_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/comment-list`;
+const GET_SEARCH_BOARD_LIST_URL = (searchWord: string) =>
+  `${API_DOMAIN}/board/search/${searchWord}`;
+const GET_RELATION_LIST_URL = (searchWord: string) =>
+  `${API_DOMAIN}/search/relation/${searchWord}`;
+const GET_BOARD_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}`;
+const GET_FAVORITE_LIST_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}/favorite-list`;
+const GET_COMMENT_LIST_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}/comment-list`;
 
-const PUT_FAVORITE_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/favorite`;
-const POST_COMMENT_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}/comment`;
-const PATCH_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
-const DELETE_BOARD_URL = (boardNumber: number | string) => `${API_DOMAIN}/board/${boardNumber}`;
+const PUT_FAVORITE_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}/favorite`;
+const POST_COMMENT_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}/comment`;
+const PATCH_BOARD_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}`;
+const DELETE_BOARD_URL = (boardNumber: number | string) =>
+  `${API_DOMAIN}/board/${boardNumber}`;
 const POST_BOARD_URL = () => `${API_DOMAIN}/board`;
 
 const GET_USER_URL = (email: string) => `${API_DOMAIN}/user/${email}`;
-const GET_USER_BOARD_LIST_URL = (email: string) => `${API_DOMAIN}/board/user-list/${email}`;
+const GET_USER_BOARD_LIST_URL = (email: string) =>
+  `${API_DOMAIN}/board/user-list/${email}`;
 
 const PATCH_USER_NICKNAME_URL = () => `${API_DOMAIN}/user/nickname`;
 const PATCH_USER_PROFILE_URL = () => `${API_DOMAIN}/user/profile`;
@@ -36,8 +68,8 @@ const GET_SIGN_IN_USER_URL = () => `${API_DOMAIN}/user`;
 const UPLOAD_FILE = () => `http://localhost:4040/file/upload`;
 
 export const signUpRequest = async (data: SignUpRequestDto) => {
-  const result =
-    await axios.post(SIGN_UP_URL(), data) // await : 리턴할때까지 기다림
+  const result = await axios
+    .post(SIGN_UP_URL(), data) // await : 리턴할때까지 기다림
     .then((response) => {
       const responseBody: SignUpResponseDto = response.data;
       const { code } = responseBody;
@@ -53,8 +85,8 @@ export const signUpRequest = async (data: SignUpRequestDto) => {
 };
 
 export const SignInRequest = async (data: SignInRequestDto) => {
-  const result =
-    await axios.post(SIGN_IN_URL(), data)
+  const result = await axios
+    .post(SIGN_IN_URL(), data)
     .then((response) => {
       const responseBody: SignInResponseDto = response.data;
       return responseBody;
@@ -167,38 +199,62 @@ export const getCommentListRequest = async (boardNumber: number | string) => {
   return result;
 };
 
-export const putFavoriteRequest = async (boardNumber: number | string, token: string
+export const putFavoriteRequest = async (
+  boardNumber: number | string,
+  token: string
 ) => {
   const result = await axios
-    .post(PUT_FAVORITE_URL(boardNumber), { headers: {  }})
+    .put(
+      PUT_FAVORITE_URL(boardNumber),
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
     .then((response) => {
-      return response;
+      const responseBody: PutFavoriteResponseDto = response.data;
+      const { code } = responseBody;
+      return code;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      const { code } = responseBody;
+      return code;
+    });
 
   return result;
 };
 
 export const postCommentRequest = async (
   boardNumber: number | string,
-  data: any
+  data: PostCommentRequestDto,
+  token: string
 ) => {
   const result = await axios
-    .post(POST_COMMENT_URL(boardNumber), data)
-    .then((response) => {
-      return response;
+    .post(POST_COMMENT_URL(boardNumber), data, {
+      headers: { Authorization: `Bearer ${token}` },
     })
-    .catch((error) => null);
+    .then((response) => {
+      const responseBody: PostCommentResponseDto = response.data;
+      const { code } = responseBody;
+      return code;
+    })
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      const { code } = responseBody;
+      return code;
+    });
 
   return result;
 };
 
 export const patchBoardRequest = async (
   boardNumber: number | string,
-  data: PatchBoardRequestDto, token: string
+  data: PatchBoardRequestDto,
+  token: string
 ) => {
   const result = await axios
-    .patch(PATCH_BOARD_URL(boardNumber), data, { headers: { Authorization: `Bearer ${token}` } })
+    .patch(PATCH_BOARD_URL(boardNumber), data, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => {
       const responseBody: PatchBoardResponseDto = response.data;
       const { code } = responseBody;
@@ -213,20 +269,33 @@ export const patchBoardRequest = async (
   return result;
 };
 
-export const deleteBoardRequest = async (boardNumber: number | string) => {
+export const deleteBoardRequest = async (
+  boardNumber: number | string,
+  token: string
+) => {
   const result = await axios
-    .delete(DELETE_BOARD_URL(boardNumber))
-    .then((response) => {
-      return response;
+    .delete(DELETE_BOARD_URL(boardNumber), {
+      headers: { Authorization: `Bearer ${token}` },
     })
-    .catch((error) => null);
+    .then((response) => {
+      const responseBody: DeleteBoardResponseDto = response.data;
+      const { code } = responseBody;
+      return code;
+    })
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      const { code } = responseBody;
+      return code;
+    });
 
   return result;
 };
 
 export const uploadFileRequest = async (data: FormData) => {
   const result = await axios
-    .post(UPLOAD_FILE(), data, { headers: { 'Content-Type': 'multipart/form-data' }})
+    .post(UPLOAD_FILE(), data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
     .then((response) => {
       const imageUrl: string = response.data;
       return imageUrl;
@@ -236,9 +305,14 @@ export const uploadFileRequest = async (data: FormData) => {
   return result;
 };
 
-export const postBoardRequest = async (data: PostBoardRequestDto, token: string) => {
+export const postBoardRequest = async (
+  data: PostBoardRequestDto,
+  token: string
+) => {
   const result = await axios
-    .post(POST_BOARD_URL(), data, { headers: { Authorization: `Bearer ${token}` } })
+    .post(POST_BOARD_URL(), data, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => {
       const responseBody: PostBoardResponseDto = response.data;
       const { code } = responseBody;
@@ -254,7 +328,8 @@ export const postBoardRequest = async (data: PostBoardRequestDto, token: string)
 };
 
 export const getUserRequest = async (email: string) => {
-  const result = await axios.get(GET_USER_URL(email))
+  const result = await axios
+    .get(GET_USER_URL(email))
     .then((response) => {
       const responseBody: GetUserResponseDto = response.data;
       return responseBody;
@@ -301,16 +376,17 @@ export const patchUserNicknameRequest = async (data: any) => {
 };
 
 export const getSignInUserRequest = async (token: string) => {
-  const headers = {headers: { 'Authorization': `Bearer ${token}` }}
-  const result = await axios.get(GET_SIGN_IN_USER_URL(), headers)
-  .then((response) => {
-    const responseBody: GetLoginUserResponseDto = response.data;
-    return responseBody;
-  })
-  .catch((error) => {
-    const responseBody: ResponseDto = error.response.data;
-    return responseBody;
-  });
+  const headers = { headers: { Authorization: `Bearer ${token}` } };
+  const result = await axios
+    .get(GET_SIGN_IN_USER_URL(), headers)
+    .then((response) => {
+      const responseBody: GetLoginUserResponseDto = response.data;
+      return responseBody;
+    })
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
 
   return result;
 };
