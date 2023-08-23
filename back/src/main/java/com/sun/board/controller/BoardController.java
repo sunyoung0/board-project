@@ -49,9 +49,11 @@ public class BoardController {
 	}
 
 	// API : 최신 게시물 불러오기 메서드 //
-	@GetMapping("/current-board")
-	public ResponseEntity<? super GetCurrentBoardResponseDto> getCurrentBoard() {
-		ResponseEntity<? super GetCurrentBoardResponseDto> response = boardService.getCurrentBoard();
+	@GetMapping("/current-board/{section}")
+	public ResponseEntity<? super GetCurrentBoardResponseDto> getCurrentBoard(
+		@PathVariable(value = "section", required = true) Integer section
+	) {
+		ResponseEntity<? super GetCurrentBoardResponseDto> response = boardService.getCurrentBoard(section);
 		return response;
 	}
 

@@ -17,7 +17,6 @@ import { useUserStore } from "src/stores";
 import "./style.css";
 import { SignInResponseDto } from "src/interfaces/response/auth";
 import ResponseDto from "src/interfaces/response/response.dto";
-import { GetLoginUserResponseDto } from "src/interfaces/response/user";
 
 
 
@@ -71,8 +70,8 @@ export default function Authentication() {
       const now = new Date().getTime();           // getTime() 날짜를 숫자로 바꿈
       const expires = new Date(now + expiredTime * 1000);
 
-      setCookie("accessToken", token, { expires });
-      navigator("/");
+      setCookie("accessToken", token, { expires, path: MAIN_PATH });
+      navigator(MAIN_PATH);
 
     }
 

@@ -1,22 +1,22 @@
 import axios from "axios";
-import {
-  SignInRequestDto,
-  SignUpRequestDto,
-} from "src/interfaces/request/auth";
+import { SignInRequestDto, SignUpRequestDto} from "src/interfaces/request/auth";
 import {
   PatchBoardRequestDto,
   PostBoardRequestDto,
   PostCommentRequestDto,
 } from "src/interfaces/request/board";
-import {
-  SignInResponseDto,
-  SignUpResponseDto,
+import { PatchNicknameRequestDto, PatchProfileImageRequestDto } from "src/interfaces/request/user";
+import { SignInResponseDto, SignUpResponseDto,
 } from "src/interfaces/response/auth";
 import {
   DeleteBoardResponseDto,
   GetBoardResponseDto,
   GetCommentListResponseDto,
+  GetCurrentResponseDto,
   GetFavoriteListResponseDto,
+  GetSearchBoardResponseDto,
+  GetTop3ResponseDto,
+  GetUserListResponseDto,
   PatchBoardResponseDto,
   PostBoardResponseDto,
   PostCommentResponseDto,
@@ -27,6 +27,8 @@ import { GetPopularListResponseDto, GetRelationListResponseDto } from "src/inter
 import {
   GetLoginUserResponseDto,
   GetUserResponseDto,
+  PatchNicknameResponseDto,
+  PatchProfileImageResponseDto,
 } from "src/interfaces/response/user";
 
 const API_DOMAIN = "http://localhost:4040/api/v1";
@@ -34,11 +36,12 @@ const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
 
 const GET_TOP3_BOARD_LIST_URL = () => `${API_DOMAIN}/board/top-3`;
-const GET_CURRENT_BOARD_LIST_URL = () => `${API_DOMAIN}/board/current-board`;
+const GET_CURRENT_BOARD_LIST_URL = (section: number) => `${API_DOMAIN}/board/current-board/${section}`;
 const GET_POPULAR_LIST_URL = () => `${API_DOMAIN}/search/popular`;
 
-const GET_SEARCH_BOARD_LIST_URL = (searchWord: string) =>
-  `${API_DOMAIN}/board/search/${searchWord}`;
+const GET_SEARCH_BOARD_LIST_URL = (searchWord: string, relationWord?: string) =>
+  relationWord ? `${API_DOMAIN}/board/search/${searchWord}/${relationWord}` : `${API_DOMAIN}/board/search/${searchWord}`;
+  
 const GET_RELATION_LIST_URL = (searchWord: string) =>
   `${API_DOMAIN}/search/relation/${searchWord}`;
 const GET_BOARD_URL = (boardNumber: number | string) =>
@@ -104,20 +107,28 @@ export const getTop3BoardListRequest = async () => {
   const result = await axios
     .get(GET_TOP3_BOARD_LIST_URL()) // get방식에선 data가 붙을 수 없음
     .then((response) => {
-      return response;
+      const responseBody: GetTop3ResponseDto = response.data;
+      return responseBody;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody:ResponseDto = error.response.data;
+      return responseBody;
+    });
 
   return result;
 };
 
-export const getCurrentBoardListRequest = async () => {
+export const getCurrentBoardListRequest = async (section: number) => {
   const result = await axios
-    .get(GET_CURRENT_BOARD_LIST_URL())
+    .get(GET_CURRENT_BOARD_LIST_URL(section))
     .then((response) => {
-      return response;
+      const responseBody: GetCurrentResponseDto = response.data;
+      return responseBody;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
 
   return result;
 };
@@ -137,13 +148,17 @@ export const getPopularListRequest = async () => {
   return result;
 };
 
-export const getSearchBoardListRequest = async (searchWord: string) => {
+export const getSearchBoardListRequest = async (searchWord: string, relationWord?: string) => {
   const result = await axios
-    .get(GET_SEARCH_BOARD_LIST_URL(searchWord))
+    .get(GET_SEARCH_BOARD_LIST_URL(searchWord, relationWord))
     .then((response) => {
-      return response;
+      const responseBody: GetSearchBoardResponseDto = response.data;
+      return responseBody;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
 
   return result;
 };
@@ -351,31 +366,47 @@ export const getUserBoardListRequest = async (email: string) => {
   const result = await axios
     .get(GET_USER_BOARD_LIST_URL(email))
     .then((response) => {
-      return response;
+      const responseBody: GetUserListResponseDto = response.data;
+      return responseBody;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      return responseBody;
+    });
 
   return result;
 };
 
-export const patchUserProfileRequest = async (data: any) => {
+export const patchNicknameRequest = async (data: PatchNicknameRequestDto, token: string) => {
   const result = await axios
-    .patch(PATCH_USER_PROFILE_URL(), data)
+    .patch(PATCH_USER_NICKNAME_URL(), data, { headers : { Authorization: `Bearer ${token}`}})
     .then((response) => {
-      return response;
+      const responseBody: PatchNicknameResponseDto = response.data;
+      const { code } = responseBody;
+      return code;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      const { code } = responseBody;
+      return code;
+    });
 
   return result;
 };
 
-export const patchUserNicknameRequest = async (data: any) => {
+export const patchProfileImageRequest = async (data: PatchProfileImageRequestDto, token: string) => {
   const result = await axios
-    .patch(PATCH_USER_NICKNAME_URL(), data)
+    .patch(PATCH_USER_PROFILE_URL(), data, { headers : { Authorization: `Bearer ${token}`}})
     .then((response) => {
-      return response;
+      const responseBody: PatchProfileImageResponseDto = response.data;
+      const { code } = responseBody;
+      return code;
     })
-    .catch((error) => null);
+    .catch((error) => {
+      const responseBody: ResponseDto = error.response.data;
+      const { code } = responseBody;
+      return code;
+    });
 
   return result;
 };

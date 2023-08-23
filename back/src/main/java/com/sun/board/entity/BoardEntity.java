@@ -2,6 +2,7 @@ package com.sun.board.entity;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,8 +36,8 @@ public class BoardEntity {
 	private String writerEmail;
 
 	  public BoardEntity(String writerEmail, PostBoardRequestDto dto) {
-    Date now = new Date();
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    Date now = Date.from(Instant.now());
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     String writeDatetime = simpleDateFormat.format(now);
 
     this.title = dto.getTitle();

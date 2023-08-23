@@ -8,6 +8,7 @@ import { usePagination } from 'src/hooks';
 
 import { useUserStore } from 'src/stores';
 
+import './style.css';
 import { useCookies } from 'react-cookie';
 import { deleteBoardRequest, getBoardRequest, getCommentListRequest, getFavoriteListRequest, postCommentRequest, putFavoriteRequest } from 'src/apis';
 import { PostCommentRequestDto } from 'src/interfaces/request/board';
@@ -15,9 +16,10 @@ import { GetBoardResponseDto, GetCommentListResponseDto, GetFavoriteListResponse
 import { CommentListResponseDto } from 'src/interfaces/response/board/get-comment-list.response.dto';
 import { FavoriteListResponseDto } from 'src/interfaces/response/board/get-favorite-list.response.dto';
 import ResponseDto from 'src/interfaces/response/response.dto';
-import './style.css';
+import { dateFormat } from 'src/utils';
 
-// 7/25 강의 영상도 보기 앞 2시간만
+import defaultProfileImage from 'src/assets/default-profile-image.png';
+
 //          component          //
 // description: 게시물 상세 화면 //
 export default function BoardDetail() {
@@ -223,10 +225,10 @@ export default function BoardDetail() {
           </div>
           <div className='board-detail-meta-container'>
             <div className='board-detail-meta-left'>
-              <div className='board-detail-writer-profile-image' style={{ backgroundImage: `url(${board?.writerProfileImage})` }}></div>
+              <div className='board-detail-writer-profile-image' style={{ backgroundImage: `url(${board?.writerProfileImage ? board?.writerProfileImage : defaultProfileImage })` }}></div>
               <div className='board-detail-writer-nickname' onClick={onWriterNicknameClickHandler}>{board?.writerNickname}</div>
               <div className='board-detail-write-date'>{'\|'}</div>
-              <div className='board-detail-write-date'>{board?.writeDatetime}</div>
+              <div className='board-detail-write-date'>{dateFormat(board?.writeDatetime as string)}</div>
             </div>
             <div className='board-detail-meta-right'>
               {openMore && (
@@ -301,7 +303,7 @@ export default function BoardDetail() {
         <div className='favorite-list-container'>
           {favoriteList.map((item) => (
             <div className='favorite-list-item'>
-              <div className='favorite-user-profile' style={{ backgroundImage: `url(${item.profileImageUrl})` }}></div>
+              <div className='favorite-user-profile' style={{ backgroundImage: `url(${item.profileImageUrl ? item.profileImageUrl : defaultProfileImage })` }}></div>
               <div className='favorite-user-nickname'>{item.nickname}</div>
             </div>
           ))}

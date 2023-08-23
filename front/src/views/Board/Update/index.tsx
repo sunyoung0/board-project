@@ -21,18 +21,8 @@ export default function BoardUpdate() {
   const { boardNumber } = useParams();
 
   // description : 게시물 정보를 저장할 상태 //
-  const {
-    boardTitle,
-    boardContent,
-    boardImage,
-    setBoardNumber,
-    setBoardTitle,
-    setBoardContent,
-    setBoardImage,
-  } = useBoardWriteStore();
-
-  // description : 이미지를 저장할 상태 //
-  const [boardImageUrl, setBoardImageUrl] = useState<string | null>("");
+  const { boardTitle, boardContent, boardImageUrl } = useBoardWriteStore();
+  const { setBoardNumber, setBoardTitle, setBoardContent, setBoardImage, setBoardImageUrl } = useBoardWriteStore();
 
   //					function					//
   const navigator = useNavigate();

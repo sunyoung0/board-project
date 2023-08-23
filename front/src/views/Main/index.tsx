@@ -3,19 +3,18 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { usePagination } from "src/hooks";
-import { CurrentListResponseDto, Top3ListResponseDto} from "src/interfaces/response";
 
 import BoardListItem from "src/components/BoardListItem";
 import Pagination from "src/components/Pagination";
 import Top3ListItem from "src/components/Top3ListItem";
 
 import { COUNT_BY_PAGE, SEARCH_PATH } from "src/constants";
-import { currentBoardListMock } from "src/mocks";
 
-import { getPopularListRequest } from "src/apis";
+import { getCurrentBoardListRequest, getPopularListRequest, getTop3BoardListRequest } from "src/apis";
 import ResponseDto from "src/interfaces/response/response.dto";
 import { GetPopularListResponseDto } from "src/interfaces/response/search";
 import "./style.css";
+import { BoardListResponseDto, GetCurrentResponseDto, GetTop3ResponseDto } from "src/interfaces/response/board";
 
 //            component            //
 // description: 메인 화면 컴포넌트 //
@@ -31,11 +30,28 @@ export default function Main() {
   const MainTop = () => {
     //                state                 //
     // description : 인기 게시물 리스트 상태 //
-    const [top3List, setTop3List] = useState<Top3ListResponseDto[]>([]);
+    const [top3List, setTop3List] = useState<BoardListResponseDto[]>([]);
 
+    //          function          //
+    // description : Top3 게시물 리스트 불러오기 응답 처리 함수 //
+    const getTop3BoardListResponseHandler = (responseBody: GetTop3ResponseDto | ResponseDto) => {
+      const { code } = responseBody;
+      if (code === 'DE') alert('데이터베이스 에러입니다.');
+      if (code !== 'SU') return;
+
+      const { top3 } = responseBody as GetTop3ResponseDto;
+      setTop3List(top3);
+    }
+
+    //          event handler          //
+
+    //          component          //
+    
     //            effect             //
     // description : 첫 시작 시 인기 게시물 데이터 불러오기 //
-    useEffect(() => {}, []);
+    useEffect(() => {
+      getTop3BoardListRequest().then(getTop3BoardListResponseHandler);
+    }, []);
 
     //              render               //
     return (
@@ -62,7 +78,7 @@ export default function Main() {
     const { totalPage, currentPage, currentSection, onPageClickHandler, onPreviousClickHandler, onNextClickHandler, changeSection } = usePagination();
 
     // description : 최신 게시물 리스트 상태 //
-    const [currentList, setCurrentList] = useState<CurrentListResponseDto[]>([]);
+    const [currentList, setCurrentList] = useState<BoardListResponseDto[]>([]);
 
     // description : 인기 검색어 리스트 상태 //
     const [popularList, setPopularList] = useState<string[]>([]);
@@ -80,6 +96,19 @@ export default function Main() {
       setPopularList(popularList);
     };
 
+    // description : 최신 게시물 리스트 불러오기 응답 처리 함수 //
+    const getCurrentBoardListResponseHandler = (responseBody: GetCurrentResponseDto | ResponseDto) => {
+      const { code } = responseBody;
+      if (code === 'VF') alert('섹션이 잘못되었습니다.');
+      if (code === 'DE') alert('데이터베이스 에러입니다.');
+      if (code !== 'SU') return;
+
+      const { boardList } = responseBody as GetCurrentResponseDto;
+      changeSection(boardList.length, COUNT_BY_PAGE);
+      setCurrentList(boardList);
+
+    }
+
     //            event handler             //
     // description : 인기 검색어 클릭 이벤트 //
     const onPopularClickHandler = (word: string) => {
@@ -96,19 +125,9 @@ export default function Main() {
 
     // description : 현재 섹션이 바뀔 때마다 페이지 리스트 변경 및 최신 게시물 불러오기 //
     useEffect(() => {
-      axios
-        .get("url")
-        .then((response) => {
-          changeSection(response.data.length, COUNT_BY_PAGE);
-          setCurrentList(response.data);
-        })
-        .catch((error) => {
-          changeSection(72, COUNT_BY_PAGE);
-          setCurrentList(currentBoardListMock);
-        });
 
-      // changeSection(72, COUNT_BY_PAGE);
-      // if (!currentList.length) setCurrentList(currentBoardListMock);
+      getCurrentBoardListRequest(currentSection).then(getCurrentBoardListResponseHandler);
+      
     }, [currentSection]);
 
     //            render            //

@@ -1,25 +1,10 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import {
-  patchBoardRequest,
-  postBoardRequest,
-  uploadFileRequest,
-} from "src/apis";
-import {
-  AUTH_PATH,
-  BOARD_DETAIL_PATH,
-  BOARD_UPDATE_PATH,
-  BOARD_WRITE_PATH,
-  MAIN_PATH,
-  SEARCH_PATH,
-  USER_PAGE_PATH,
-} from "src/constants";
-import {
-  PatchBoardRequestDto,
-  PostBoardRequestDto,
-} from "src/interfaces/request/board";
+import { patchBoardRequest, postBoardRequest, uploadFileRequest } from "src/apis";
+import { AUTH_PATH, BOARD_DETAIL_PATH, BOARD_UPDATE_PATH, BOARD_WRITE_PATH, MAIN_PATH, SEARCH_PATH, USER_PAGE_PATH } from "src/constants";
+import { PatchBoardRequestDto, PostBoardRequestDto } from "src/interfaces/request/board";
 import { useBoardWriteStore, useUserStore } from "src/stores";
 import "./style.css";
 
@@ -27,6 +12,9 @@ import "./style.css";
 // description : Header 레이아웃 //
 export default function Header() {
   //					state					//
+  // description : 검색 버튼 Ref 상태 //
+  const searchButtonRef = useRef<HTMLDivElement | null>(null);
+
   // description : url 경로 상태 //
   const { pathname } = useLocation(); //pathname을 바로 받아도 됨
 
@@ -34,7 +22,7 @@ export default function Header() {
   const { user, setUser } = useUserStore();
 
   // description : 게시물 작성 데이터 상태 //
-  const { boardNumber, boardTitle, boardContent, boardImage, resetBoard } =
+  const { boardNumber, boardTitle, boardContent, boardImage, boardImageUrl, resetBoard } =
     useBoardWriteStore();
 
   // description : Cookie 상태 //
@@ -103,7 +91,7 @@ export default function Header() {
   const isAuth = pathname === AUTH_PATH;
 
   // description : 현재 페이지가 마이페이지인지 여부 //
-  const isMyPage = pathname.includes(USER_PAGE_PATH(""));
+  const isMyPage = user && pathname.includes(USER_PAGE_PATH(user.email));
 
   // description : upload 버튼 출력 여부 //
   const showUpload =
@@ -159,25 +147,40 @@ export default function Header() {
 
   // description : 업로드 버튼 클릭 이벤트 //
   const onUploadButtonClickHandler = async () => {
-    const imageUrl = await fileUpload();
-
-    const data: PostBoardRequestDto | PatchBoardRequestDto = {
-      title: boardTitle,
-      contents: boardContent,
-      imageUrl,
-    };
+   
 
     const token = cookies.accessToken;
 
-    if (pathname === BOARD_WRITE_PATH())
+    if (pathname === BOARD_WRITE_PATH()){
+      const imageUrl = await fileUpload();
+
+      const data: PostBoardRequestDto | PatchBoardRequestDto = {
+        title: boardTitle,
+        contents: boardContent,
+        imageUrl,
+      }
       postBoardRequest(data, token).then(postBoardResponseHandler);
+    }
+      
     else {
       if (!boardNumber) return;
-      patchBoardRequest(boardNumber, data, token).then(
-        patchBoardResponseHandler
-      );
+      const imageUrl = boardImage ? await fileUpload() : boardImageUrl;
+
+      const data:  PatchBoardRequestDto = {
+        title: boardTitle,
+        contents: boardContent,
+        imageUrl,
+      }
+      patchBoardRequest(boardNumber, data, token).then(postBoardResponseHandler);
     }
   };
+
+  // description : 검색 인풋 창 Enter 이벤트 //
+  const onSearchEnterPressHandler = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') return;
+    if (!searchButtonRef) return;
+    searchButtonRef.current?.click();
+  }
 
   //					effect					//
   // description : 로그인 유저 정보가 바뀔 때마다 실행 //
@@ -204,36 +207,24 @@ export default function Header() {
         {showSearch &&
           (searchState ? (
             <div className="header-search-box">
-              <input
-                className="header-search-input"
-                value={search}
-                onChange={onSearchChangeHandler}
-              />
-              <div
-                className="header-icon-box"
-                onClick={onSearchButtonClickHandler}
-              >
+              <input className="header-search-input" value={search} onChange={onSearchChangeHandler} onKeyDown={onSearchEnterPressHandler}/>
+              <div ref={searchButtonRef} className="header-icon-box"  onClick={onSearchButtonClickHandler}>
                 <div className="header-search-icon"></div>
               </div>
             </div>
           ) : (
-            <div
-              className="header-icon-box"
-              onClick={onSearchOpenButtonClickHandler}
-            >
+            <div className="header-icon-box" onClick={onSearchOpenButtonClickHandler}>
               <div className="header-search-icon"></div>
             </div>
           ))}
         {!isAuth &&
           (isMyPage ? (
             <div className="white-button" onClick={onSignOutButtonClickHandler}>
-              {" "}
-              로그아웃
+              {" "} 로그아웃
             </div>
           ) : showUpload && activeUpload ? (
             <div className="black-button" onClick={onUploadButtonClickHandler}>
-              {" "}
-              업로드{" "}
+              {" "}업로드{" "}
             </div>
           ) : showUpload && !activeUpload ? (
             <div className="disable-button"> 업로드 </div>

@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { SearchListResponseDto } from 'src/interfaces/response';
 import { usePagination } from 'src/hooks';
 import BoardListItem from 'src/components/BoardListItem';
 import Pagination from 'src/components/Pagination';
-import { searchBoardListMock } from 'src/mocks';
 import { COUNT_BY_PAGE, MAIN_PATH, SEARCH_PATH } from 'src/constants';
 
 import './style.css';
-import { getRelationListRequest } from 'src/apis';
+import { getRelationListRequest, getSearchBoardListRequest } from 'src/apis';
 import { GetRelationListResponseDto } from 'src/interfaces/response/search';
 import ResponseDto from 'src/interfaces/response/response.dto';
+import { BoardListResponseDto, GetSearchBoardResponseDto } from 'src/interfaces/response/board';
 
 //        components       //
 // description : 검색 화면 //
@@ -28,27 +27,44 @@ export default function Search() {
   const [boardCount, setBoardCount] = useState<number>(5);
 
   // description : 전체 게시물 리스트 상태 //
-  const [searchList, setSearchList] = useState<SearchListResponseDto[]>([]);
+  const [searchList, setSearchList] = useState<BoardListResponseDto[]>([]);
 
   // description : 현재 페이지에서 보여줄 게시물 리스트 상태 //
-  const [pageBoardList, setPageBoardList] = useState<SearchListResponseDto[]>([]);
+  const [pageBoardList, setPageBoardList] = useState<BoardListResponseDto[]>([]);
 
   // description : 연관 검색어 리스트 상태 //
   const [relationList, setRelationList] = useState<string[]>([]);
+
+  // description : 이전 검색어 상태 //
+  const [relationWord, setRelationWord] = useState<string | undefined>(undefined);
 
   //                     function                    //
   // description : 페이지 이동을 위한 네비게이트 함수 //
   const navigator = useNavigate();
 
   // description : 현재 페이지의 게시물 리스트 분류 함수 //
-  const getPageBoardList = () => {
+  const getPageBoardList = (boardList: BoardListResponseDto[]) => {
     const lastIndex =
-      searchBoardListMock.length > COUNT_BY_PAGE * currentPage ?
-      COUNT_BY_PAGE * currentPage : searchBoardListMock.length;
+      boardList.length > COUNT_BY_PAGE * currentPage ?
+      COUNT_BY_PAGE * currentPage : boardList.length;
     const startIndex = COUNT_BY_PAGE * (currentPage - 1);
-    const pageBoardList = searchBoardListMock.slice(startIndex, lastIndex);
+    const pageBoardList = boardList.slice(startIndex, lastIndex);
 
     setPageBoardList(pageBoardList);
+  }
+
+  // description : 검색 결과 리스트 불러오기 응답 처리 함수 //
+  const getSearchBoardListResponseHandler = (responseBody: GetSearchBoardResponseDto | ResponseDto) => {
+    const { code } = responseBody;
+    if (code === 'VF') alert('잘못된 입력입니다.');
+    if (code === 'DE') alert('데이터베이스 에러입니다.');
+    if (code !== 'SU') return;
+
+    const { boardList } = responseBody as GetSearchBoardResponseDto;
+    setSearchList(boardList);
+    setBoardCount(boardList.length);
+    getPageBoardList(boardList);
+    changeSection(boardList.length, COUNT_BY_PAGE);
   }
 
   // description : 연관 검색어 리스트 불러오기 응답 처리 함수 //
@@ -78,25 +94,20 @@ export default function Search() {
       navigator(MAIN_PATH);
       return;
     }
-    setSearchList(searchBoardListMock);
-    setBoardCount((searchWord as string).length);     // searchWord as string : 변수의 타입을 강제로 변환
-    // setRelationList(relationWordListMock);
 
+    getSearchBoardListRequest(searchWord, relationWord).then(getSearchBoardListResponseHandler);
     getRelationListRequest(searchWord).then(getRelationListResponseHandler);
-    getPageBoardList();
-
-    changeSection(searchBoardListMock.length, COUNT_BY_PAGE);
-
+    setRelationWord(searchWord);
   }, [searchWord]);
 
   // description : 현재 섹션이 바뀔 때마다 페이지 리스트 변경 //
   useEffect(() => {
-    changeSection(searchBoardListMock.length, COUNT_BY_PAGE);
+    if (boardCount) changeSection(boardCount, COUNT_BY_PAGE);
   }, [currentSection]);
 
   // description : 현재 페이지가 바뀔 때마다 검색 게시물 분류하기 //
   useEffect(() => {
-    getPageBoardList();
+    getPageBoardList(searchList);
   }, [currentPage]);
 
   //            render          //

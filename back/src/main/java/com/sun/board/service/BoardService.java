@@ -24,7 +24,7 @@ public interface BoardService {
 	ResponseEntity<? super GetTop3ResponseDto> getTop3();
 
 	// method : 최신 게시물 리스트 불러오기 메서드 //
-	ResponseEntity<? super GetCurrentBoardResponseDto> getCurrentBoard();
+	ResponseEntity<? super GetCurrentBoardResponseDto> getCurrentBoard(Integer section);
 
 	// method : 게시물 불러오기 메서드 //
 	ResponseEntity<? super GetBoardResponseDto> getBoard(Integer boardNumber);
